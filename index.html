@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+<title>Days Until Kreesu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap">
+<style>
+  :root{
+    --night:#1d1630;
+    --night-2:#2b2045;
+    --rose:#f4a6bb;
+    --rose-deep:#e0708f;
+    --peach:#ffd3b0;
+    --cream:#fbf0e8;
+    --lilac:#a898c6;
+    --skin-a:#f3c9a8;
+    --skin-b:#e8b08c;
+    --sleeve-a:#7c6bb0;
+    --sleeve-b:#e0708f;
+    --display:"Fredoka", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    --hand:"Caveat", "Bradley Hand", "Segoe Print", cursive;
+  }
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 80% at 50% 0%, var(--night-2) 0%, var(--night) 60%) fixed, var(--night);
+    color:var(--cream);
+    font-family:var(--display);
+    padding-inline:16px;
+    overflow-x:hidden;
+  }
+  #sky{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  main{position:relative;z-index:1;max-width:880px;margin:0 auto;padding-block:40px 48px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+  .eyebrow{font-family:var(--hand);font-size:1.6rem;color:var(--rose);margin:0;transform:rotate(-2deg)}
+  h1{margin:0;font-weight:600;font-size:clamp(1.5rem,4.5vw,2.3rem);line-height:1.15;text-wrap:balance;max-width:22ch}
+  .big{display:flex;align-items:baseline;justify-content:center;gap:.25em;margin-top:6px}
+  .big b{font-size:clamp(5rem,20vw,9.5rem);font-weight:700;line-height:.9;color:var(--peach);font-variant-numeric:tabular-nums;letter-spacing:-.02em;text-shadow:0 6px 30px rgba(244,166,187,.25)}
+  .big span{font-size:clamp(1.3rem,4vw,1.9rem);font-weight:500;color:var(--rose)}
+
+  .stage{position:relative;width:100%;height:clamp(150px,30vw,230px);overflow:hidden;margin-top:8px}
+  .hand{position:absolute;top:50%;width:min(52%,380px);transform:translateY(-50%);transition:right 1.6s cubic-bezier(.5,0,.2,1),left 1.6s cubic-bezier(.5,0,.2,1)}
+  .hand svg{display:block;width:100%;height:auto;overflow:visible}
+  .hand.l{right:calc(50% + var(--gap) / 2 - 3px)}
+  .hand.r{left:calc(50% + var(--gap) / 2 - 3px)}
+  .hand.r svg{transform:scaleX(-1)}
+  .hand.l .bob{animation:bobL 3.2s ease-in-out infinite}
+  .hand.r .bob{animation:bobR 3.2s ease-in-out infinite}
+  @keyframes bobL{0%,100%{transform:translate(0,0)}50%{transform:translate(4px,-3px)}}
+  @keyframes bobR{0%,100%{transform:translate(0,0)}50%{transform:translate(4px,3px)}}
+  .gapline{position:absolute;top:50%;left:calc(50% - var(--gap) / 2 + 14px);right:calc(50% - var(--gap) / 2 + 14px);border-top:2px dashed rgba(168,152,198,.45);transition:all 1.6s cubic-bezier(.5,0,.2,1)}
+  .gapline em{position:absolute;left:50%;top:8px;transform:translateX(-50%);font-style:normal;font-family:var(--hand);font-size:1.25rem;color:var(--lilac);white-space:nowrap}
+  .spark{position:absolute;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-62%) scale(0);opacity:0;pointer-events:none}
+  .met .spark{animation:pop 1.2s .9s cubic-bezier(.3,1.6,.5,1) forwards}
+  .met .gapline{opacity:0}
+  .met .hand .bob{animation:none}
+  @keyframes pop{0%{transform:translate(-50%,-62%) scale(0);opacity:0}60%{opacity:1}100%{transform:translate(-50%,-110%) scale(1);opacity:1}}
+
+  .clock{display:flex;gap:clamp(10px,3vw,22px);justify-content:center;flex-wrap:wrap;margin-top:4px}
+  .unit{display:flex;flex-direction:column;align-items:center;min-width:64px}
+  .unit b{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:600;font-variant-numeric:tabular-nums;color:var(--cream)}
+  .unit small{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--lilac)}
+  .when{margin:6px 0 0;color:var(--lilac);font-size:.95rem}
+  .note{font-family:var(--hand);font-size:1.55rem;color:var(--rose);margin:14px 0 0;max-width:30ch;line-height:1.2}
+
+  /* kiss scene */
+  .kiss{display:none;flex-direction:column;align-items:center;gap:4px;margin-top:4px}
+  .together .kiss{display:flex}
+  .together .countdown-only{display:none}
+  .kiss svg{width:min(320px,80vw);height:auto;overflow:visible}
+  .kiss .me{animation:leanL 2.6s ease-in-out infinite}
+  .kiss .you{animation:leanR 2.6s ease-in-out infinite}
+  .kiss .mwah{font-family:var(--hand);font-size:2rem;fill:var(--rose);opacity:0;animation:mwah 2.6s ease-in-out infinite}
+  .kiss .kheart{transform-box:fill-box;transform-origin:center;opacity:0;animation:kh 2.6s ease-in-out infinite}
+  @keyframes leanL{0%,15%{transform:translateX(0)}45%,70%{transform:translateX(12px)}100%{transform:translateX(0)}}
+  @keyframes leanR{0%,15%{transform:translateX(0)}45%,70%{transform:translateX(-12px)}100%{transform:translateX(0)}}
+  @keyframes mwah{0%,45%{opacity:0}55%,75%{opacity:1}90%,100%{opacity:0}}
+  @keyframes kh{0%,45%{opacity:0;transform:translateY(0) scale(.4)}60%{opacity:1;transform:translateY(-10px) scale(1.1)}85%{opacity:1;transform:translateY(-34px) scale(1)}100%{opacity:0;transform:translateY(-50px) scale(.9)}}
+  .kiss h2{margin:6px 0 0;font-size:clamp(1.8rem,6vw,2.8rem);font-weight:700;color:var(--peach)}
+  .kiss p{margin:0;font-family:var(--hand);font-size:1.6rem;color:var(--rose)}
+
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .met .spark{opacity:1;transform:translate(-50%,-110%) scale(1)}
+    .kiss .mwah,.kiss .kheart{opacity:1}
+  }
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<main id="app">
+  <p class="eyebrow">for my Kreesu</p>
+  <h1 id="headline">Until I finally get to hold your hand</h1>
+
+  <div class="big countdown-only"><b id="days">–</b><span id="daysLabel">days</span></div>
+
+  <div class="stage" id="stage" style="--gap:60%">
+    <div class="gapline"><em id="gapText">getting closer</em></div>
+    <div class="hand l" aria-hidden="true"><div class="bob">
+      <svg viewBox="0 0 300 120"><use href="#handShape" style="--sleeve:var(--sleeve-a);--skin:var(--skin-a)"/></svg>
+    </div></div>
+    <div class="hand r" aria-hidden="true"><div class="bob">
+      <svg viewBox="0 0 300 120"><use href="#handShape" style="--sleeve:var(--sleeve-b);--skin:var(--skin-b)"/></svg>
+    </div></div>
+    <svg class="spark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 35 C 6 25 2 17 6 10 C 10 4 17 5 20 11 C 23 5 30 4 34 10 C 38 17 34 25 20 35 Z" fill="#e0708f"/></svg>
+  </div>
+
+  <div class="clock countdown-only" aria-live="off">
+    <div class="unit"><b id="h">00</b><small>hours</small></div>
+    <div class="unit"><b id="m">00</b><small>minutes</small></div>
+    <div class="unit"><b id="s">00</b><small>seconds</small></div>
+  </div>
+  <p class="when countdown-only">Thursday, 10 December 2026</p>
+  <p class="note countdown-only" id="note">every sleep is one less sleep without you</p>
+
+  <div class="kiss" id="kiss">
+    <svg viewBox="0 0 320 180" aria-label="Two sweethearts kissing">
+      <g class="me">
+        <circle cx="100" cy="100" r="52" fill="#f3c9a8"/>
+        <path d="M48 96 C 46 50 80 36 106 42 C 130 46 150 62 150 86 C 128 70 96 70 70 80 C 62 84 54 90 48 96 Z" fill="#3b2a4f"/>
+        <path d="M100 104 q8 7 16 0" stroke="#3b2a4f" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="116" cy="124" rx="11" ry="6" fill="#f4a6bb" opacity=".8"/>
+        <circle cx="146" cy="116" r="4" fill="#e0708f"/>
+      </g>
+      <g class="you">
+        <circle cx="220" cy="100" r="52" fill="#e8b08c"/>
+        <path d="M170 90 C 168 52 196 36 222 40 C 256 44 276 70 272 110 C 270 132 280 150 286 158 C 262 150 262 126 262 96 C 244 80 204 74 170 90 Z" fill="#2a1b24"/>
+        <path d="M204 104 q-8 7 -16 0" stroke="#2a1b24" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="204" cy="124" rx="11" ry="6" fill="#f4a6bb" opacity=".8"/>
+        <circle cx="174" cy="116" r="4" fill="#e0708f"/>
+      </g>
+      <path class="kheart" d="M160 96 C 150 89 147 83 150 78 C 153 74 158 75 160 79 C 162 75 167 74 170 78 C 173 83 170 89 160 96 Z" fill="#e0708f"/>
+      <text class="mwah" x="160" y="36" text-anchor="middle">mwah!</text>
+    </svg>
+    <h2>Together at last</h2>
+    <p>no more timezones, just us</p>
+  </div>
+
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="handShape">
+      <rect x="-40" y="30" width="172" height="60" rx="12" fill="var(--sleeve)"/>
+      <rect x="116" y="25" width="20" height="70" rx="7" fill="var(--sleeve)" style="filter:brightness(1.18)"/>
+      <!-- thumb, reaching up and forward -->
+      <rect x="160" y="26" width="58" height="18" rx="9" fill="var(--skin)" transform="rotate(-22 166 36)" style="filter:brightness(.95)"/>
+      <!-- palm -->
+      <path d="M132 36 Q160 26 200 30 Q222 34 222 60 Q222 88 198 92 Q164 96 132 86 Z" fill="var(--skin)"/>
+      <!-- open fingers, gently fanned, reaching out -->
+      <g fill="var(--skin)">
+        <rect x="196" y="31" width="80" height="15" rx="7.5" transform="rotate(-5 200 38)"/>
+        <rect x="198" y="46" width="90" height="15" rx="7.5" style="filter:brightness(.98)"/>
+        <rect x="196" y="61" width="83" height="14.5" rx="7.25" transform="rotate(4 200 68)" style="filter:brightness(.96)"/>
+        <rect x="192" y="75" width="66" height="13" rx="6.5" transform="rotate(9 196 81)" style="filter:brightness(.94)"/>
+      </g>
+      <g fill="#fff" opacity=".3">
+        <ellipse cx="267" cy="36" rx="5" ry="3.4" transform="rotate(-5 200 38)"/>
+        <ellipse cx="279" cy="53.5" rx="5" ry="3.4"/>
+        <ellipse cx="270" cy="68" rx="5" ry="3.3" transform="rotate(4 200 68)"/>
+        <ellipse cx="250" cy="81.5" rx="4.4" ry="3" transform="rotate(9 196 81)"/>
+      </g>
+      <path d="M150 52 Q170 60 190 56" stroke="#000" stroke-opacity=".08" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  // Sydney time: countdown starts 18 Sep 2026, meets at midnight 10 Dec 2026 (AEDT, UTC+11)
+  var START = Date.parse("2026-09-18T00:00:00+10:00");
+  var TARGET = Date.parse("2026-12-10T00:00:00+11:00");
+  var DAY = 864e5, MAX_GAP = 48; // % of stage width at the start
+
+  var $ = function(id){return document.getElementById(id)};
+  var app = $("app"), stage = $("stage");
+  var preview = false, metShown = false;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var notes = [
+    "every sleep is one less sleep without you",
+    "our fingertips are nearly touching",
+    "close enough to almost feel you",
+    "soon, very soon"
+  ];
+
+  function pad(n){return String(n).padStart(2,"0")}
+
+  function tick(){
+    var now = preview ? TARGET : Date.now();
+    var left = Math.max(0, TARGET - now);
+    var days = Math.ceil(left / DAY);
+    var progress = Math.min(1, Math.max(0, (now - START) / (TARGET - START)));
+    // step per whole day so the hands visibly move once each day
+    var dayProgress = left === 0 ? 1 : Math.min(1, 1 - (days / Math.round((TARGET - START)/DAY)));
+    var gap = MAX_GAP * (1 - dayProgress);
+    stage.style.setProperty("--gap", (left === 0 ? -4 : gap).toFixed(2) + "%");
+
+    $("days").textContent = days;
+    $("daysLabel").textContent = days === 1 ? "day" : "days";
+    var hrs = Math.floor(left / 36e5) % 24, mins = Math.floor(left / 6e4) % 60, secs = Math.floor(left / 1e3) % 60;
+    $("h").textContent = pad(hrs); $("m").textContent = pad(mins); $("s").textContent = pad(secs);
+    $("gapText").textContent = days === 1 ? "one more sleep" : days + " sleeps apart";
+    $("note").textContent = notes[Math.min(notes.length-1, Math.floor(progress * notes.length))];
+
+    if(left === 0 && !metShown){ meet(); }
+    if(left > 0 && metShown){ unmeet(); }
+  }
+
+  function meet(){
+    metShown = true;
+    stage.classList.add("met");
+    $("headline").textContent = "Kreesu, I'm finally holding your hand";
+    setTimeout(function(){ if(metShown){ app.classList.add("together"); burst(60); } }, reduce ? 0 : 1800);
+  }
+  function unmeet(){
+    metShown = false;
+    stage.classList.remove("met");
+    app.classList.remove("together");
+    $("headline").textContent = "Until I finally get to hold your hand";
+  }
+
+
+  // sky: stars + floating hearts
+  var cv = $("sky"), ctx = cv.getContext("2d"), stars = [], hearts = [], W, H, dpr;
+  function size(){
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr;
+    stars = [];
+    var n = Math.round(innerWidth * innerHeight / 5200);
+    for(var i=0;i<n;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:(Math.random()*1.2+.3)*dpr,p:Math.random()*6.28,s:.5+Math.random()*1.5});
+  }
+  function heartPath(x,y,s){
+    ctx.beginPath();
+    ctx.moveTo(x, y + s*.35);
+    ctx.bezierCurveTo(x - s*.9, y - s*.2, x - s*.45, y - s*.95, x, y - s*.45);
+    ctx.bezierCurveTo(x + s*.45, y - s*.95, x + s*.9, y - s*.2, x, y + s*.35);
+    ctx.fill();
+  }
+  function burst(n){
+    if(reduce) return;
+    for(var i=0;i<n;i++) hearts.push({x:Math.random()*W, y:H + Math.random()*H*.4, v:(1+Math.random()*2)*dpr, s:(8+Math.random()*16)*dpr, w:Math.random()*6.28, c:Math.random()<.5?"#f4a6bb":"#e0708f"});
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<stars.length;i++){
+      var st = stars[i];
+      ctx.globalAlpha = reduce ? .6 : .35 + .45*Math.sin(t/1000*st.s + st.p);
+      ctx.fillStyle = "#fbf0e8";
+      ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 6.28); ctx.fill();
+    }
+    if(metShown && hearts.length < 40 && Math.random() < .08) burst(1);
+    for(var j=hearts.length-1;j>=0;j--){
+      var h = hearts[j];
+      h.y -= h.v; h.w += .03;
+      ctx.globalAlpha = Math.min(1, h.y / (H*.5)) * .85;
+      ctx.fillStyle = h.c;
+      heartPath(h.x + Math.sin(h.w)*14*dpr, h.y, h.s);
+      if(h.y < -40) hearts.splice(j,1);
+    }
+    ctx.globalAlpha = 1;
+    if(!reduce) requestAnimationFrame(draw);
+  }
+  addEventListener("resize", size);
+  size();
+  reduce ? draw(0) : requestAnimationFrame(draw);
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
